@@ -51,6 +51,17 @@ class UsuariosController {
             if (!descricao_endereco) {
                 return res.status(400).json({ message: 'O preenchimento da descrição do endereço é obrigatório' })
             }
+
+            const usuarioExistente = await Usuarios.findOne({
+                where: {
+                  [Op.or]: [{ cpf }, {email }]
+                }
+              });
+              if (usuarioExistente) {
+                  const dadosCadastrados = usuarioExistente.email === email ? 'E-mail já cadastrado' : 'CPF já cadastrado';
+        
+                return res.status(409).json({ message: dadosCadastrados });
+              }
         
             const usuarios = await Usuarios.create({
                 email: email,
